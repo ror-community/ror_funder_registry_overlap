@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-
+@st.cache_data(show_spinner=False)
 def load_members(members_file):
     members = load_json(members_file)
     return {member['primary-name']: member['id'] for member in members['members']}
@@ -14,7 +14,7 @@ def load_members(members_file):
 def get_member_id(members, member_name):
     return members.get(member_name)
 
-
+@st.cache_data(show_spinner=False)
 def count_funders(member_id, rows=1000):
     base_url = 'https://api.crossref.org/members'
     url = f"{base_url}/{member_id}/works"
@@ -40,20 +40,20 @@ def load_json(filename):
         data = json.load(file)
     return data
 
-
+@st.cache_data(show_spinner=False)
 def find_overlap(funders, equivalents):
     funders_ids = set(funders.keys())
     equivalent_ids = set(equivalents.keys())
     return funders_ids & equivalent_ids
 
-
+@st.cache_data(show_spinner=False)
 def display_pie_chart(title, values, labels):
     plt.figure(figsize=(6, 6))
     plt.pie(values, labels=labels, autopct='%1.1f%%')
     plt.title(title)
     st.pyplot(plt)
 
-
+@st.cache_data(show_spinner=False)
 def calculate_percentages(overlap, funders, equivalents):
     total_funders, overlapping_funders = len(funders), len(overlap)
     overlapping_funders_percentage = (
@@ -83,7 +83,7 @@ def calculate_percentages(overlap, funders, equivalents):
     st.pyplot(fig)
     st.caption("1. Number of Funder IDs used in member assertions that have been mapped to ROR IDs.\n2. Number of assertions by member where the Funder ID is mapped to a ROR ID")
 
-
+@st.cache_data(show_spinner=False)
 def unmapped_to_csv(funders, overlap):
     unmapped_funders = {f'http://dx.doi.org/10.13039/{k}': v for k, v in funders.items() if k not in overlap}
     df = pd.DataFrame(list(unmapped_funders.items()),
@@ -91,6 +91,7 @@ def unmapped_to_csv(funders, overlap):
     unmapped_csv = df.to_csv(index=False)
     return unmapped_csv
 
+@st.cache_data(show_spinner=False)
 def mapped_to_csv(ror_funder_mapping, overlap):
     unmapped_funders = {f'http://dx.doi.org/10.13039/{k}': v for k, v in ror_funder_mapping.items() if k in overlap}
     df = pd.DataFrame(list(unmapped_funders.items()),
@@ -99,40 +100,35 @@ def mapped_to_csv(ror_funder_mapping, overlap):
     return mapped_csv
 
 
-def main():
+def member_view():
     st.title("ROR/Funder Registry Overlap")
     members = load_members('members.json')
-    member_name = st.selectbox('Enter Member Name:', options=[
-                               ''] + list(members.keys()))
-    submit = st.button("Submit")
+    member_name = st.selectbox('Enter Member Name:', options=[''] + list(members.keys()))
+    submit = st.button("Show overlap")
+
     if submit:
         if member_name:
             member_id = get_member_id(members, member_name)
+        with st.spinner('Generating report...'):
             funders = count_funders(member_id)
-            if funders:
-                equivalents = load_json('ror_funder_registry_mapping.json')
-                overlap = find_overlap(funders, equivalents)
-                calculate_percentages(overlap, funders, equivalents)
-                col1, col2 = st.columns(2)
-                unmapped_csv = unmapped_to_csv(funders, overlap)
-                col1.download_button(
-                    label="Download unmapped funders as CSV",
-                    data=unmapped_csv,
-                    file_name=f"member_{member_id}_unmapped_funders.csv",
-                    mime="text/csv",
-                )
-                mapped_csv = mapped_to_csv(equivalents, overlap)
-                col2.download_button(
-                    label="Download mapped funders as CSV",
-                    data=mapped_csv,
-                    file_name=f"member_{member_id}_mapped_funders.csv",
-                    mime="text/csv",
-                )
-            else:
-                st.write(f"**No funding information found for {member_name}**")
+        if funders:
+            equivalents = load_json('ror_funder_registry_mapping.json')
+            overlap = find_overlap(funders, equivalents)
+            calculate_percentages(overlap, funders, equivalents)
+            col1, col2 = st.columns(2)
+            unmapped_csv = unmapped_to_csv(funders, overlap)
+            col1.download_button(
+                label="Download unmapped funders as CSV",
+                data=unmapped_csv,
+                file_name=f"member_{member_id}_unmapped_funders.csv",
+                mime="text/csv",
+            )
+            mapped_csv = mapped_to_csv(equivalents, overlap)
+            col2.download_button(
+                label="Download mapped funders as CSV",
+                data=mapped_csv,
+                file_name=f"member_{member_id}_mapped_funders.csv",
+                mime="text/csv",
+            )
         else:
-            st.warning("Please select a Member Name.")
-
-
-if __name__ == '__main__':
-    main()
+            st.write(f"**No funding information found for {member_name}**")
