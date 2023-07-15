@@ -6,22 +6,12 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 @st.cache_data(show_spinner=False)
-def load_members(members_file):
-    members = load_json(members_file)
-    return {member['primary-name']: member['id'] for member in members['members']}
-
-
-def get_member_id(members, member_name):
-    return members.get(member_name)
-
-@st.cache_data(show_spinner=False)
-def count_funders(member_id, rows=1000):
-    base_url = 'https://api.crossref.org/members'
-    url = f"{base_url}/{member_id}/works"
+def count_funders(rows=1000):
+    base_url = 'https://api.crossref.org/works'
     funder_counts = {}
     params = {'filter': 'has-funder:true',
               'facet': 'funder-doi:*', 'rows': rows}
-    response = requests.get(url, params=params)
+    response = requests.get(base_url, params=params)
     if response.status_code == 200:
         data = response.json()
         funders = data.get('message', {}).get('facets', {}).get(
@@ -81,7 +71,7 @@ def calculate_percentages(overlap, funders, equivalents):
     plt.tight_layout()
 
     st.pyplot(fig)
-    st.caption("1. Number of Funder IDs used in member assertions that have been mapped to ROR IDs.\n2. Number of assertions by member where the Funder ID is mapped to a ROR ID")
+    st.caption("1. Total number of Funder IDs used in assertions that have been mapped to ROR IDs.\n2. Total number of assertions where the Funder ID is mapped to a ROR ID")
 
 @st.cache_data(show_spinner=False)
 def unmapped_to_csv(funders, overlap):
@@ -100,35 +90,28 @@ def mapped_to_csv(ror_funder_mapping, overlap):
     return mapped_csv
 
 
-def member_view():
-    st.title("Crossref Member - ROR/Funder Registry Overlap")
-    members = load_members('members.json')
-    member_name = st.selectbox('Enter Member Name:', options=[''] + list(members.keys()))
-    submit = st.button("Show overlap")
-
-    if submit:
-        if member_name:
-            member_id = get_member_id(members, member_name)
-        with st.spinner('Generating report...'):
-            funders = count_funders(member_id)
-        if funders:
-            equivalents = load_json('ror_funder_registry_mapping.json')
-            overlap = find_overlap(funders, equivalents)
-            calculate_percentages(overlap, funders, equivalents)
-            col1, col2 = st.columns(2)
-            unmapped_csv = unmapped_to_csv(funders, overlap)
-            col1.download_button(
-                label="Download unmapped funders as CSV",
-                data=unmapped_csv,
-                file_name=f"member_{member_id}_unmapped_funders.csv",
-                mime="text/csv",
-            )
-            mapped_csv = mapped_to_csv(equivalents, overlap)
-            col2.download_button(
-                label="Download mapped funders as CSV",
-                data=mapped_csv,
-                file_name=f"member_{member_id}_mapped_funders.csv",
-                mime="text/csv",
-            )
-        else:
-            st.write(f"**No funding information found for {member_name}**")
+def Crossref_view():
+    st.title("Crossref - Aggregrate ROR/Funder Registry Overlap")
+    with st.spinner('Generating report...'):
+        funders = count_funders()
+    if funders:
+        equivalents = load_json('ror_funder_registry_mapping.json')
+        overlap = find_overlap(funders, equivalents)
+        calculate_percentages(overlap, funders, equivalents)
+        col1, col2 = st.columns(2)
+        unmapped_csv = unmapped_to_csv(funders, overlap)
+        col1.download_button(
+            label="Download unmapped funders as CSV",
+            data=unmapped_csv,
+            file_name=f"all_unmapped_funders.csv",
+            mime="text/csv",
+        )
+        mapped_csv = mapped_to_csv(equivalents, overlap)
+        col2.download_button(
+            label="Download mapped funders as CSV",
+            data=mapped_csv,
+            file_name=f"all_mapped_funders.csv",
+            mime="text/csv",
+        )
+    else:
+        st.write(f"**Error returning Funders from API**")

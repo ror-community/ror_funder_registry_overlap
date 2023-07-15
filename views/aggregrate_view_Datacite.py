@@ -5,30 +5,23 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-@st.cache_data(show_spinner=False)
-def count_funders(rows=1000):
-    base_url = 'https://api.crossref.org/works'
-    funder_counts = {}
-    params = {'filter': 'has-funder:true',
-              'facet': 'funder-doi:*', 'rows': rows}
-    response = requests.get(base_url, params=params)
-    if response.status_code == 200:
-        data = response.json()
-        funders = data.get('message', {}).get('facets', {}).get(
-            'funder-doi', {}).get('values', None)
-        if funders:
-            for funder_id, count_works in funders.items():
-                funder_id = funder_id.replace(
-                    'http://dx.doi.org/10.13039/', '')
-                funder_counts[funder_id] = count_works
-            return funder_counts
-    return None
-
 
 def load_json(filename):
     with open(filename, 'r') as file:
         data = json.load(file)
     return data
+
+
+@st.cache_data(show_spinner=False)
+def count_funders(datacite_funder_counts):
+    datacite_funders = load_json(datacite_funder_counts)
+    funder_counts = {}
+    for funder_id, count_works in datacite_funders.items():
+        funder_id = funder_id.replace(
+            'http://dx.doi.org/10.13039/', '')
+        funder_counts[funder_id] = count_works
+    return funder_counts
+
 
 @st.cache_data(show_spinner=False)
 def find_overlap(funders, equivalents):
@@ -36,12 +29,14 @@ def find_overlap(funders, equivalents):
     equivalent_ids = set(equivalents.keys())
     return funders_ids & equivalent_ids
 
+
 @st.cache_data(show_spinner=False)
 def display_pie_chart(title, values, labels):
     plt.figure(figsize=(6, 6))
     plt.pie(values, labels=labels, autopct='%1.1f%%')
     plt.title(title)
     st.pyplot(plt)
+
 
 @st.cache_data(show_spinner=False)
 def calculate_percentages(overlap, funders, equivalents):
@@ -61,17 +56,18 @@ def calculate_percentages(overlap, funders, equivalents):
     mpl.rcParams['font.weight'] = 'bold'
 
     axs[0].pie([overlapping_funders_percentage, non_overlapping_funders_percentage], labels=[
-               'Overlapping', 'Non-overlapping'], autopct='%1.1f%%')
+        'Overlapping', 'Non-overlapping'], autopct='%1.1f%%')
     axs[0].set_title(f"Overlapping vs Non-overlapping Funder IDs¹\n\n{overlapping_funders} / {total_funders} total funders", fontweight='bold')
 
     axs[1].pie([overlapping_assertions_percentage, non_overlapping_assertions_percentage], labels=[
-               'Overlapping', 'Non-overlapping'], autopct='%1.1f%%')
+        'Overlapping', 'Non-overlapping'], autopct='%1.1f%%')
     axs[1].set_title(f"Overlapping vs Non-overlapping Assertions²\n\n{overlapping_assertions} / {total_assertions} total assertions", fontweight='bold')
 
     plt.tight_layout()
 
     st.pyplot(fig)
     st.caption("1. Total number of Funder IDs used in assertions that have been mapped to ROR IDs.\n2. Total number of assertions where the Funder ID is mapped to a ROR ID")
+
 
 @st.cache_data(show_spinner=False)
 def unmapped_to_csv(funders, overlap):
@@ -80,6 +76,7 @@ def unmapped_to_csv(funders, overlap):
                       columns=['Funder ID', 'Count'])
     unmapped_csv = df.to_csv(index=False)
     return unmapped_csv
+
 
 @st.cache_data(show_spinner=False)
 def mapped_to_csv(ror_funder_mapping, overlap):
@@ -90,10 +87,10 @@ def mapped_to_csv(ror_funder_mapping, overlap):
     return mapped_csv
 
 
-def aggregrate_view():
-    st.title("Aggregrate ROR/Funder Registry Overlap")
+def Datacite_view():
+    st.title("Datacite - Aggregrate ROR/Funder Registry Overlap")
     with st.spinner('Generating report...'):
-        funders = count_funders()
+        funders = count_funders('datacite_funders.json')
     if funders:
         equivalents = load_json('ror_funder_registry_mapping.json')
         overlap = find_overlap(funders, equivalents)
