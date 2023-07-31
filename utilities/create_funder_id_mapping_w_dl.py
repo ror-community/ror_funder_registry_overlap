@@ -52,7 +52,7 @@ def delete_files(prefix):
 
 if __name__ == "__main__":
     # Record ID for ROR data dumps
-    record_id = "8071924"
+    record_id = input('Record ID for ROR data dump: ')
     prefix = download_and_unzip(record_id)
     json_file_path = f'{prefix}.json'
     if os.path.exists(json_file_path):
