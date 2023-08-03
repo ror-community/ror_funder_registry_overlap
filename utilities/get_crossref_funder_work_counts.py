@@ -6,14 +6,6 @@ import argparse
 import traceback
 import requests
 
-def catch_requests_exceptions(func):
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except requests.exceptions.RequestException:
-            return 'Error'
-    return wrapper
-
 
 def read_input_file(input_file):
     funder_ids = []
@@ -31,7 +23,7 @@ def transform_funder_id(funder_id):
 def form_query_url(funder_id):
     return f"https://api.crossref.org/funders/{funder_id}"
 
-@catch_requests_exceptions
+
 def query_crossref_api(url, headers):
     if headers:
         response = requests.get(url, headers=headers)
