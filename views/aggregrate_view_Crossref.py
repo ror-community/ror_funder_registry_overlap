@@ -87,7 +87,7 @@ def mapped_to_csv(ror_funder_mapping, overlap):
     return mapped_csv
 
 
-def crossref_view():
+def Crossref_view():
     st.title("crossref - Aggregrate ROR/Funder Registry Overlap")
     with st.spinner('Generating report...'):
         funders = count_funders('crossref_funders.json')
