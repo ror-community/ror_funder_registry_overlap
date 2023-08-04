@@ -7,6 +7,15 @@ import traceback
 import requests
 
 
+def catch_requests_exceptions(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except requests.exceptions.RequestException:
+            return 'Error'
+    return wrapper
+
+
 def read_input_file(input_file):
     funder_ids = []
     with open(input_file, 'r') as file:
@@ -20,21 +29,20 @@ def transform_funder_id(funder_id):
     return re.sub('http://dx.doi.org/10.13039/', '', funder_id)
 
 
-def form_query_url(funder_id):
-    return f"https://api.crossref.org/funders/{funder_id}"
-
-
-def query_crossref_api(url, headers):
+@catch_requests_exceptions
+def query_crossref_api(funder_id, headers):
+    base_url = "https://api.crossref.org/works"
+    params = {"filter": f"funder:{funder_id}"}
     if headers:
-        response = requests.get(url, headers=headers)
+        response = requests.get(base_url, params=params, headers=headers)
     else:
-        response = requests.get(url)
+        response = requests.get(base_url, params=params)
     response.raise_for_status()
     return response.json()
 
 
 def extract_work_count(response):
-    return response['message']['work-count']
+    return response['message']['total-results']
 
 
 def write_output_csv(output_file, data):
@@ -51,7 +59,7 @@ def parse_arguments():
     parser.add_argument(
         '-o', '--output', help='Output CSV file', default='crossref_funder_work_counts.csv')
     parser.add_argument('-t', '--token', type=str, default='',
-                    help='Crossref Metadata Plus API token')
+                        help='Crossref Metadata Plus API token')
     parser.add_argument('-u', '--user_agent', type=str, default='',
                         help='User Agent for the request (mailto:name@email)')
     return parser.parse_args()
@@ -63,7 +71,6 @@ def main():
     data = []
     for funder_id in funder_ids:
         transformed_id = transform_funder_id(funder_id)
-        url = form_query_url(transformed_id)
         headers = {}
         print(f'Retrieving works for {funder_id}...')
         if args.token:
@@ -72,7 +79,7 @@ def main():
             headers['User-Agent'] = args.user_agent
         for i in range(2):  # Retry twice at most
             try:
-                response = query_crossref_api(url, headers)
+                response = query_crossref_api(transformed_id, headers)
                 work_count = extract_work_count(response)
                 write_output_csv(args.output, [funder_id, work_count])
                 break
@@ -84,7 +91,8 @@ def main():
                 else:
                     print("Retry failed. Check the error below and fix it:")
                     traceback.print_exc()
-                    break 
+                    break
+
 
 if __name__ == "__main__":
     main()
