@@ -11,6 +11,10 @@ views = {
     "Datacite - Aggregrate overlap": Datacite_view
 }
 
+funder_registry_version = '1.51' 
+ror_registry_version = '1.29'
+works_count_date = '2023-08-03'
+
 
 def main():
     sidebar_title = st.sidebar.title("Views")
@@ -22,6 +26,12 @@ def main():
         if st.sidebar.button(view_name):
             state['current_view'] = view_name
     views[state['current_view']]()
+
+    # Add versions and date to the bottom sidebar
+    st.sidebar.markdown('---')
+    st.sidebar.markdown(f'**Funder Registry version:** {funder_registry_version}')
+    st.sidebar.markdown(f'**ROR registry version:** {ror_registry_version}')
+    st.sidebar.markdown(f'**Work Counts Update:** {works_count_date}')
 
 
 if __name__ == '__main__':
