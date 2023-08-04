@@ -30,8 +30,8 @@ def main():
     # Add versions and date to the bottom sidebar
     st.sidebar.markdown('---')
     st.sidebar.markdown(f'**Funder Registry version:** {funder_registry_version}')
-    st.sidebar.markdown(f'**ROR registry version:** {ror_registry_version}')
-    st.sidebar.markdown(f'**Last Refresh date:** {works_count_date}')
+    st.sidebar.markdown(f'**ROR version:** {ror_registry_version}')
+    st.sidebar.markdown(f'**Last refresh date:** {works_count_date}')
 
 
 if __name__ == '__main__':
