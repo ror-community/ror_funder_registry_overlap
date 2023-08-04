@@ -57,11 +57,10 @@ def calculate_percentages(overlap, funders, equivalents):
 
     axs[0].pie([overlapping_funders_percentage, non_overlapping_funders_percentage], labels=[
         'Overlapping', 'Non-overlapping'], autopct='%1.1f%%')
-    axs[0].set_title(f"Overlapping vs Non-overlapping Funder IDs¹\n\n{overlapping_funders} / {total_funders} total funders", fontweight='bold')
-
+    axs[0].set_title(f"Overlapping vs Non-overlapping Funder IDs¹\n\n{format(overlapping_funders, ',d')} / {format(total_funders, ',d')} total funders", fontweight='bold')
     axs[1].pie([overlapping_assertions_percentage, non_overlapping_assertions_percentage], labels=[
         'Overlapping', 'Non-overlapping'], autopct='%1.1f%%')
-    axs[1].set_title(f"Overlapping vs Non-overlapping Assertions²\n\n{overlapping_assertions} / {total_assertions} total assertions", fontweight='bold')
+    axs[1].set_title(f"Overlapping vs Non-overlapping Assertions²\n\n{format(overlapping_assertions, ',d')} / {format(total_assertions, ',d')} total assertions", fontweight='bold')
 
     plt.tight_layout()
 
