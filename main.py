@@ -6,9 +6,9 @@ from views.funder_lookup_view import funder_lookup_view
 
 views = {
     "Funder Mapping": funder_lookup_view,
-    "Crossref - Overlap by Member": member_view,
-    "Crossref - Aggregrate Overlap": Crossref_view,
-    "Datacite - Aggregrate Overlap": Datacite_view
+    "Crossref - Overlap by member": member_view,
+    "Crossref - Aggregrate overlap": Crossref_view,
+    "Datacite - Aggregrate overlap": Datacite_view
 }
 
 funder_registry_version = '1.51' 
