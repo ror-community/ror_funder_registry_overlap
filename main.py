@@ -11,8 +11,8 @@ views = {
     "Datacite - Aggregrate overlap": Datacite_view
 }
 
-funder_registry_version = '1.51' 
-ror_registry_version = '1.29'
+funder_registry_version = '1.52' 
+ror_registry_version = '1.30'
 works_count_date = '2023/08/03'
 
 
