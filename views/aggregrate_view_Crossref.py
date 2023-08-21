@@ -1,7 +1,7 @@
 import streamlit as st
 from load_functions import load_json, plot_overlap, unmapped_to_csv, mapped_to_csv
 
-
+@st.cache_data(show_spinner=False)
 def Crossref_view():
     st.title("Crossref - Aggregrate ROR/Funder Registry Overlap")
     plot_overlap(st.session_state.crossref_analysis)

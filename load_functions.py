@@ -53,7 +53,6 @@ def overlap_analysis(overlap, funders, equivalents):
 
 
 
-@st.cache_data(show_spinner=False)
 def load_crossref():
 	funders = count_funders('crossref_funders.json')
 	equivalents = load_json('ror_funder_registry_mapping.json')
@@ -61,7 +60,7 @@ def load_crossref():
 	analysis = overlap_analysis(overlap, funders, equivalents)
 	return analysis
 
-@st.cache_data(show_spinner=False)
+
 def load_datacite():
 	funders = count_funders('datacite_funders.json')
 	equivalents = load_json('ror_funder_registry_mapping.json')
