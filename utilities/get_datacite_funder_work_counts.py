@@ -13,12 +13,12 @@ def parse_arguments():
         '-o', '--output', help='Output CSV file', default='datacite_funder_work_counts.csv')
     return parser.parse_args()
 
-def read_input_csv(input_file):
+def read_input_file(input_file):
     funder_ids = []
     with open(input_file, 'r') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            funder_ids.append(row['funder_id'])
+        funders = json.load(file)
+        for funder in funders['funders']:
+            funder_ids.append(funder['id'])
     return funder_ids
 
 def transform_funder_id(funder_id):
@@ -42,7 +42,7 @@ def write_output_csv(output_file, data):
 
 def main():
     args = parse_arguments()
-    funder_ids = read_input_csv(args.input)
+    funder_ids = read_input_file(args.input)
     data = []
     for funder_id in funder_ids:
         transformed_id = transform_funder_id(funder_id)
