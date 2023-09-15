@@ -102,17 +102,17 @@ def mapped_to_csv(ror_funder_mapping, overlap):
 
 def member_view():
     st.title("Crossref Member - ROR/Funder Registry Overlap")
-    members = load_members('members.json')
+    members = load_members('data/members.json')
     member_name = st.selectbox('Enter Member Name:', options=[''] + list(members.keys()))
     submit = st.button("Show overlap")
 
-    if submit:
+    if member_name and submit:
         if member_name:
             member_id = get_member_id(members, member_name)
         with st.spinner('Generating report...'):
             funders = count_funders(member_id)
         if funders:
-            equivalents = load_json('ror_funder_registry_mapping.json')
+            equivalents = load_json('data/ror_funder_registry_mapping.json')
             overlap = find_overlap(funders, equivalents)
             calculate_percentages(overlap, funders, equivalents)
             col1, col2 = st.columns(2)
@@ -132,3 +132,5 @@ def member_view():
             )
         else:
             st.write(f"**No funding information found for {member_name}**")
+    elif submit:
+        st.write(f"**Please select a member.**")

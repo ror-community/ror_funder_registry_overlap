@@ -17,16 +17,8 @@ ror_registry_version = '1.32'
 works_count_date = '2023/09/15'
 
 
-st.session_state['equivalents'] = load_json('ror_funder_registry_mapping.json')
 
-st.session_state['crossref_funders'] = count_funders('crossref_funders.json')
-st.session_state['crossref_overlap'] = find_overlap(
-    st.session_state.crossref_funders, st.session_state.equivalents)
 st.session_state['crossref_analysis'] = load_crossref()
-
-st.session_state['datacite_funders'] = count_funders('datacite_funders.json')
-st.session_state['datacite_overlap'] = find_overlap(
-    st.session_state.datacite_funders, st.session_state.equivalents)
 st.session_state['datacite_analysis'] = load_datacite()
 
 
@@ -49,5 +41,4 @@ def main():
 
 
 if __name__ == '__main__':
-    st.set_page_config(initial_sidebar_state="collapsed")
     main()
