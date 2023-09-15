@@ -106,7 +106,7 @@ def member_view():
     member_name = st.selectbox('Enter Member Name:', options=[''] + list(members.keys()))
     submit = st.button("Show overlap")
 
-    if submit:
+    if member_name and submit:
         if member_name:
             member_id = get_member_id(members, member_name)
         with st.spinner('Generating report...'):
@@ -132,3 +132,5 @@ def member_view():
             )
         else:
             st.write(f"**No funding information found for {member_name}**")
+    elif submit:
+        st.write(f"**Please select a member.**")
