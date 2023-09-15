@@ -13,8 +13,8 @@ views = {
 }
 
 funder_registry_version = '1.52'
-ror_registry_version = '1.31'
-works_count_date = '2023/08/03'
+ror_registry_version = '1.32'
+works_count_date = '2023/09/15'
 
 
 st.session_state['equivalents'] = load_json('ror_funder_registry_mapping.json')
