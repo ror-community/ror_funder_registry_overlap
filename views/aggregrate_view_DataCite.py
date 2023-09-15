@@ -1,7 +1,6 @@
 import streamlit as st
 from load_functions import plot_overlap
 
-@st.cache_data(show_spinner=False, experimental_allow_widgets=True)
 def DataCite_view():
     st.title("DataCite - Aggregate ROR/Funder Registry Overlap")
     plot_overlap(st.session_state.datacite_analysis)
