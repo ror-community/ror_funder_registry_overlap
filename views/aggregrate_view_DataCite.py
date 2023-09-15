@@ -7,13 +7,13 @@ def DataCite_view():
     col1, col2 = st.columns(2)
     col1.download_button(
         label="Download unmapped funders as CSV",
-        data=open("aggregate_unmapped.csv", "r").read(),
+        data=open("data/aggregate_unmapped.csv", "r").read(),
         file_name="aggregate_unmapped.csv.csv",
         mime="text/csv",
     )
     col2.download_button(
         label="Download mapped funders as CSV",
-        data=open("aggregate_mapped.csv", "r").read(),
+        data=open("data/aggregate_mapped.csv", "r").read(),
         file_name="aggregate_mapped.csv",
         mime="text/csv",
     )

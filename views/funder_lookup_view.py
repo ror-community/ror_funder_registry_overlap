@@ -40,7 +40,7 @@ def load_json(filename):
 
 def funder_lookup_view():
     st.title("Funder Mapping Lookup")
-    funders = load_funders('funders.json')
+    funders = load_funders('data/funders.json')
     funder_name = st.selectbox('Enter Funder name:', options=[''] + list(funders.keys()))
     submit = st.button("Search")
 
