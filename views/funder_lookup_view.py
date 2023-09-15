@@ -44,26 +44,28 @@ def funder_lookup_view():
     funder_name = st.selectbox('Enter Funder name:', options=[''] + list(funders.keys()))
     submit = st.button("Search")
 
-    if submit:
-        if funder_name:
-            funder_id = get_funder_id(funders, funder_name)
-            with st.spinner('Searching...'):
-                ror_records = search_ror(funder_id)
-            if ror_records:
-                table_data = []
-                for record in ror_records:
-                    table_data.append({
-                        "Funder ID": funder_id,
-                        "Funder Name": funder_name,
-                        "ROR ID": record['id'],
-                        "ROR Name": record['name']
-                    })
-                df = pd.DataFrame(table_data)
-                markdown_table = df.to_markdown(index=False)
-                st.markdown(markdown_table, unsafe_allow_html=True)
-                st.markdown(f"<div style=\"text-align: right\"><a href=\"https://curation-request.ror.org\">Request correction?</a></div>", unsafe_allow_html=True)
-            else:
-                st.markdown(f"**No ROR record mapping found for {funder_name} - [Request?](https://curation-request.ror.org)**")
+    if submit and funder_name:
+        funder_id = get_funder_id(funders, funder_name)
+        with st.spinner('Searching...'):
+            ror_records = search_ror(funder_id)
+        if ror_records:
+            table_data = []
+            for record in ror_records:
+                table_data.append({
+                    "Funder ID": funder_id,
+                    "Funder Name": funder_name,
+                    "ROR ID": record['id'],
+                    "ROR Name": record['name']
+                })
+            df = pd.DataFrame(table_data)
+            markdown_table = df.to_markdown(index=False)
+            st.markdown(markdown_table, unsafe_allow_html=True)
+            st.markdown(f"<div style=\"text-align: right\"><a href=\"https://curation-request.ror.org\">Request correction?</a></div>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"**No ROR record mapping found for {funder_name} - [Request?](https://curation-request.ror.org)**")
+    elif submit:
+        st.write(f"**Please select a funder.**")
+
 
 
 
