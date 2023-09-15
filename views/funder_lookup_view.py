@@ -3,8 +3,6 @@ import requests
 import pandas as pd
 import streamlit as st
 
-
-@st.cache_data(show_spinner=False)
 def load_funders(funders_file):
     funders = load_json(funders_file)
     return {funder['primary-name']: funder['id'] for funder in funders['funders']}
@@ -14,7 +12,6 @@ def get_funder_id(funders, funder_name):
     return funders.get(funder_name)
 
 
-@st.cache_data(show_spinner=False)
 def search_ror(funder_id):
     matched_records = []
     url = 'https://api.ror.org/organizations'
