@@ -1,7 +1,5 @@
 import json
 import requests
-import streamlit as st
-import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
@@ -28,7 +26,6 @@ def find_overlap(funders, equivalents):
 	return funders_ids & equivalent_ids
 
 
-
 def overlap_analysis(overlap, funders, equivalents):
 	total_funders, overlapping_funders = len(funders), len(overlap)
 	overlapping_funders_percentage = (
@@ -52,7 +49,6 @@ def overlap_analysis(overlap, funders, equivalents):
 	}
 
 
-
 def load_crossref():
 	funders = count_funders('data/crossref_funders.json')
 	equivalents = load_json('data/ror_funder_registry_mapping.json')
@@ -69,7 +65,11 @@ def load_datacite():
 	return analysis
 
 
-def plot_overlap(overlap_data):
+def save_plot(fig, filename):
+    fig.savefig(filename, dpi=300)
+
+
+def plot_overlap(overlap_data, data_source):
 	fig, axs = plt.subplots(1, 2, figsize=(12, 6))
 	mpl.rcParams['font.size'] = 12
 	mpl.rcParams['font.weight'] = 'bold'
@@ -95,22 +95,15 @@ def plot_overlap(overlap_data):
 	)
 
 	plt.tight_layout()
-	st.pyplot(fig)
-	st.caption("1. Total number of Funder IDs that have been mapped to ROR IDs.\n2. Total number of assertions where the Funder ID is mapped to a ROR ID")
+	filename = f"{data_source}_overlap.png"
+	save_plot(fig, filename)
 
 
-def unmapped_to_csv(funders, overlap):
-	unmapped_funders = {f'http://dx.doi.org/10.13039/{k}': v for k, v in funders.items() if k not in overlap}
-	df = pd.DataFrame(list(unmapped_funders.items()),
-					  columns=['Funder ID', 'Count'])
-	unmapped_csv = df.to_csv(index=False)
-	return unmapped_csv
+def main():
+	crossref_data = load_crossref()
+	plot_overlap(crossref_data, "crossref")
+	datacite_data = load_datacite()
+	plot_overlap(datacite_data, "datacite")
 
-
-def mapped_to_csv(ror_funder_mapping, overlap):
-	unmapped_funders = {f'http://dx.doi.org/10.13039/{k}': v for k, v in ror_funder_mapping.items() if k in overlap}
-	df = pd.DataFrame(list(unmapped_funders.items()),
-					  columns=['Funder ID', 'ROR ID'])
-	mapped_csv = df.to_csv(index=False)
-	return mapped_csv
-
+if __name__ == '__main__':
+	main()

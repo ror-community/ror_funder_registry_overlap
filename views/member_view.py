@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+
 @st.cache_data(show_spinner=False)
 def load_members(members_file):
     members = load_json(members_file)
@@ -13,6 +14,7 @@ def load_members(members_file):
 
 def get_member_id(members, member_name):
     return members.get(member_name)
+
 
 @st.cache_data(show_spinner=False)
 def count_funders(member_id, rows=1000):
@@ -40,11 +42,13 @@ def load_json(filename):
         data = json.load(file)
     return data
 
+
 @st.cache_data(show_spinner=False)
 def find_overlap(funders, equivalents):
     funders_ids = set(funders.keys())
     equivalent_ids = set(equivalents.keys())
     return funders_ids & equivalent_ids
+
 
 @st.cache_data(show_spinner=False)
 def display_pie_chart(title, values, labels):
@@ -52,6 +56,7 @@ def display_pie_chart(title, values, labels):
     plt.pie(values, labels=labels, autopct='%1.1f%%')
     plt.title(title)
     st.pyplot(plt)
+
 
 @st.cache_data(show_spinner=False)
 def calculate_percentages(overlap, funders, equivalents):
@@ -79,9 +84,9 @@ def calculate_percentages(overlap, funders, equivalents):
     axs[1].set_title(f"Overlapping vs Non-overlapping Assertions²\n\n{format(overlapping_assertions, ',d')} / {format(total_assertions, ',d')} total assertions", fontweight='bold')
 
     plt.tight_layout()
-
     st.pyplot(fig)
     st.caption("1. Number of Funder IDs used in member assertions that have been mapped to ROR IDs.\n2. Number of assertions by member where the Funder ID is mapped to a ROR ID")
+
 
 @st.cache_data(show_spinner=False)
 def unmapped_to_csv(funders, overlap):
@@ -90,6 +95,7 @@ def unmapped_to_csv(funders, overlap):
                       columns=['Funder ID', 'Count'])
     unmapped_csv = df.to_csv(index=False)
     return unmapped_csv
+
 
 @st.cache_data(show_spinner=False)
 def mapped_to_csv(ror_funder_mapping, overlap):
@@ -103,7 +109,8 @@ def mapped_to_csv(ror_funder_mapping, overlap):
 def member_view():
     st.title("Crossref Member - ROR/Funder Registry Overlap")
     members = load_members('data/members.json')
-    member_name = st.selectbox('Enter Member Name:', options=[''] + list(members.keys()))
+    member_name = st.selectbox('Enter Member Name:', options=[
+                               ''] + list(members.keys()))
     submit = st.button("Show overlap")
 
     if member_name and submit:
