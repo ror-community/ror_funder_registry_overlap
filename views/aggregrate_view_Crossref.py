@@ -1,9 +1,9 @@
 import streamlit as st
-from load_functions import plot_overlap
 
 def Crossref_view():
     st.title("Crossref - Aggregrate ROR/Funder Registry Overlap")
-    plot_overlap(st.session_state.crossref_analysis)
+    st.image("data/crossref_overlap.png", caption="Crossref Overlap Analysis", use_column_width=True)
+    st.caption("1. Total number of Funder IDs that have been mapped to ROR IDs.\n2. Total number of assertions where the Funder ID is mapped to a ROR ID")
     col1, col2 = st.columns(2)
     col1.download_button(
         label="Download unmapped funders as CSV",

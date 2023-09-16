@@ -3,7 +3,6 @@ from views.member_view import member_view
 from views.aggregrate_view_Crossref import Crossref_view
 from views.aggregrate_view_DataCite import DataCite_view
 from views.funder_lookup_view import funder_lookup_view
-from load_functions import load_json, load_crossref, load_datacite, count_funders, find_overlap
 
 views = {
     "Funder Mapping": funder_lookup_view,
@@ -15,12 +14,6 @@ views = {
 funder_registry_version = '1.52'
 ror_registry_version = '1.32'
 works_count_date = '2023/09/15'
-
-
-
-st.session_state['crossref_analysis'] = load_crossref()
-st.session_state['datacite_analysis'] = load_datacite()
-
 
 def main():
     sidebar_title = st.sidebar.title("Views")
