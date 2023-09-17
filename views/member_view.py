@@ -118,7 +118,7 @@ def member_view():
                 overlap = find_overlap(funders, equivalents)
                 unmapped_csv = unmapped_to_csv(funders, overlap)
                 mapped_csv = mapped_to_csv(equivalents, overlap)
-            calculate_percentages(overlap, funders, equivalents)
+                calculate_percentages(overlap, funders, equivalents)
             col1, col2 = st.columns(2)
             col1.download_button(
                 label="Download unmapped funders as CSV",
