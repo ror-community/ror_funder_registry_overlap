@@ -110,21 +110,22 @@ def member_view():
     if member_name and submit:
         if member_name:
             member_id = get_member_id(members, member_name)
-        with st.spinner('Generating report...'):
+        with st.spinner('Checking for funding references...'):
             funders = count_funders(member_id)
         if funders:
-            equivalents = load_json('data/ror_funder_registry_mapping.json')
-            overlap = find_overlap(funders, equivalents)
+            with st.spinner('Generating report...'):
+                equivalents = load_json('data/ror_funder_registry_mapping.json')
+                overlap = find_overlap(funders, equivalents)
+                unmapped_csv = unmapped_to_csv(funders, overlap)
+                mapped_csv = mapped_to_csv(equivalents, overlap)
             calculate_percentages(overlap, funders, equivalents)
             col1, col2 = st.columns(2)
-            unmapped_csv = unmapped_to_csv(funders, overlap)
             col1.download_button(
                 label="Download unmapped funders as CSV",
                 data=unmapped_csv,
                 file_name=f"member_{member_id}_unmapped_funders.csv",
                 mime="text/csv",
             )
-            mapped_csv = mapped_to_csv(equivalents, overlap)
             col2.download_button(
                 label="Download mapped funders as CSV",
                 data=mapped_csv,
@@ -132,6 +133,6 @@ def member_view():
                 mime="text/csv",
             )
         else:
-            st.write(f"**No funding information found for {member_name}**")
+            st.write(f"**No funding references found for {member_name}**")
     elif submit:
         st.write(f"**Please select a member.**")
