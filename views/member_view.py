@@ -80,8 +80,7 @@ def calculate_percentages(overlap, funders, equivalents):
     axs[1].set_title(f"Overlapping vs Non-overlapping Assertions²\n\n{format(overlapping_assertions, ',d')} / {format(total_assertions, ',d')} total assertions", fontweight='bold')
 
     plt.tight_layout()
-    st.pyplot(fig)
-    st.caption("1. Number of Funder IDs used in member assertions that have been mapped to ROR IDs.\n2. Number of assertions by member where the Funder ID is mapped to a ROR ID")
+    return fig
 
 
 def unmapped_to_csv(funders, overlap):
@@ -118,7 +117,9 @@ def member_view():
                 overlap = find_overlap(funders, equivalents)
                 unmapped_csv = unmapped_to_csv(funders, overlap)
                 mapped_csv = mapped_to_csv(equivalents, overlap)
-                calculate_percentages(overlap, funders, equivalents)
+                fig = calculate_percentages(overlap, funders, equivalents)
+            st.pyplot(fig)
+            st.caption("1. Number of Funder IDs used in member assertions that have been mapped to ROR IDs.\n2. Number of assertions by member where the Funder ID is mapped to a ROR ID")
             col1, col2 = st.columns(2)
             col1.download_button(
                 label="Download unmapped funders as CSV",
