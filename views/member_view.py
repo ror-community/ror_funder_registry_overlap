@@ -16,7 +16,6 @@ def get_member_id(members, member_name):
     return members.get(member_name)
 
 
-@st.cache_data(show_spinner=False)
 def count_funders(member_id, rows=1000):
     base_url = 'https://api.crossref.org/members'
     url = f"{base_url}/{member_id}/works"
@@ -43,14 +42,12 @@ def load_json(filename):
     return data
 
 
-@st.cache_data(show_spinner=False)
 def find_overlap(funders, equivalents):
     funders_ids = set(funders.keys())
     equivalent_ids = set(equivalents.keys())
     return funders_ids & equivalent_ids
 
 
-@st.cache_data(show_spinner=False)
 def display_pie_chart(title, values, labels):
     plt.figure(figsize=(6, 6))
     plt.pie(values, labels=labels, autopct='%1.1f%%')
@@ -58,7 +55,6 @@ def display_pie_chart(title, values, labels):
     st.pyplot(plt)
 
 
-@st.cache_data(show_spinner=False)
 def calculate_percentages(overlap, funders, equivalents):
     total_funders, overlapping_funders = len(funders), len(overlap)
     overlapping_funders_percentage = (
@@ -88,7 +84,6 @@ def calculate_percentages(overlap, funders, equivalents):
     st.caption("1. Number of Funder IDs used in member assertions that have been mapped to ROR IDs.\n2. Number of assertions by member where the Funder ID is mapped to a ROR ID")
 
 
-@st.cache_data(show_spinner=False)
 def unmapped_to_csv(funders, overlap):
     unmapped_funders = {f'http://dx.doi.org/10.13039/{k}': v for k, v in funders.items() if k not in overlap}
     df = pd.DataFrame(list(unmapped_funders.items()),
@@ -97,7 +92,6 @@ def unmapped_to_csv(funders, overlap):
     return unmapped_csv
 
 
-@st.cache_data(show_spinner=False)
 def mapped_to_csv(ror_funder_mapping, overlap):
     unmapped_funders = {f'http://dx.doi.org/10.13039/{k}': v for k, v in ror_funder_mapping.items() if k in overlap}
     df = pd.DataFrame(list(unmapped_funders.items()),
