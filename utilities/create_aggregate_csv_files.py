@@ -35,8 +35,8 @@ def unmapped_to_csv(funders, overlap, filename):
 
 
 def mapped_to_csv(ror_funder_mapping, overlap, filename):
-    unmapped_funders = {f'http://dx.doi.org/10.13039/{k}': v for k, v in ror_funder_mapping.items() if k in overlap}
-    df = pd.DataFrame(list(unmapped_funders.items()),
+    mapped_funders = {f'http://dx.doi.org/10.13039/{k}': v for k, v in ror_funder_mapping.items() if k in overlap}
+    df = pd.DataFrame(list(mapped_funders.items()),
                       columns=['Funder ID', 'ROR ID'])
     mapped_csv = df.to_csv(filename, index=False)
     return mapped_csv
@@ -49,7 +49,7 @@ def create_aggregate_csv():
     unmapped_filename = f'aggregate_unmapped.csv'
     unmapped_to_csv(funders, overlap, unmapped_filename)
     mapped_filename = f'aggregate_mapped.csv'
-    mapped_to_csv(funders, overlap, mapped_filename)
+    mapped_to_csv(equivalents, overlap, mapped_filename)
 
 if __name__ == '__main__':
     create_aggregate_csv()
