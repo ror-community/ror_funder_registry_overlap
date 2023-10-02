@@ -66,18 +66,21 @@ def load_datacite():
 
 
 def save_plot(fig, filename):
-    fig.savefig(filename, dpi=300)
+	fig.savefig(filename, dpi=300)
 
 
 def plot_overlap(overlap_data, data_source):
 	fig, axs = plt.subplots(1, 2, figsize=(12, 6))
 	mpl.rcParams['font.size'] = 12
 	mpl.rcParams['font.weight'] = 'bold'
+	funder_colors = ['tab:blue', 'tab:orange']
+	assertion_colors = ['green', 'pink']
 
 	axs[0].pie(
 		[overlap_data['overlapping_funders_percentage'], overlap_data['non_overlapping_funders_percentage']],
 		labels=['Overlapping', 'Non-overlapping'],
-		autopct='%1.1f%%'
+		autopct='%1.1f%%',
+		colors=funder_colors
 	)
 	axs[0].set_title(
 		f"Overlapping vs Non-overlapping Funder IDs¹\n\n{format(overlap_data['overlapping_funders'], ',d')} / {format(overlap_data['total_funders'], ',d')} total funders",
@@ -87,7 +90,8 @@ def plot_overlap(overlap_data, data_source):
 	axs[1].pie(
 		[overlap_data['overlapping_assertions_percentage'], overlap_data['non_overlapping_assertions_percentage']],
 		labels=['Overlapping', 'Non-overlapping'],
-		autopct='%1.1f%%'
+		autopct='%1.1f%%',
+		colors=assertion_colors
 	)
 	axs[1].set_title(
 		f"Overlapping vs Non-overlapping Assertions²\n\n{format(overlap_data['overlapping_assertions'], ',d')} / {format(overlap_data['total_assertions'], ',d')} total assertions",

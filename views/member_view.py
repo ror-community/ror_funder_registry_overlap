@@ -70,13 +70,15 @@ def calculate_percentages(overlap, funders, equivalents):
     fig, axs = plt.subplots(1, 2, figsize=(12, 6))
     mpl.rcParams['font.size'] = 12
     mpl.rcParams['font.weight'] = 'bold'
+    funder_colors = ['tab:blue', 'tab:orange']
+    assertion_colors = ['green', 'pink']
 
     axs[0].pie([overlapping_funders_percentage, non_overlapping_funders_percentage], labels=[
-               'Overlapping', 'Non-overlapping'], autopct='%1.1f%%')
+               'Overlapping', 'Non-overlapping'], autopct='%1.1f%%', colors=funder_colors)
     axs[0].set_title(f"Overlapping vs Non-overlapping Funder IDs¹\n\n{format(overlapping_funders, ',d')} / {format(total_funders, ',d')} total funders", fontweight='bold')
 
     axs[1].pie([overlapping_assertions_percentage, non_overlapping_assertions_percentage], labels=[
-               'Overlapping', 'Non-overlapping'], autopct='%1.1f%%')
+               'Overlapping', 'Non-overlapping'], autopct='%1.1f%%', colors=assertion_colors)
     axs[1].set_title(f"Overlapping vs Non-overlapping Assertions²\n\n{format(overlapping_assertions, ',d')} / {format(total_assertions, ',d')} total assertions", fontweight='bold')
 
     plt.tight_layout()
