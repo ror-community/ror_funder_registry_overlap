@@ -12,8 +12,8 @@ views = {
 }
 
 funder_registry_version = '1.52'
-ror_registry_version = '1.32'
-works_count_date = '2023/09/15'
+ror_registry_version = '1.33'
+works_count_date = '2023/09/28'
 
 def main():
     sidebar_title = st.sidebar.title("Views")
