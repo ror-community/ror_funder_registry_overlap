@@ -6,7 +6,12 @@ import zipfile
 import os
 
 
+import os
+import requests
+import zipfile
+
 def download_and_unzip(record_id, path='.'):
+    # Downloading the record from Zenodo
     response = requests.get(f'https://zenodo.org/api/records/{record_id}')
     record = response.json()
     download_link = record['files'][0]['links']['self']
@@ -16,9 +21,14 @@ def download_and_unzip(record_id, path='.'):
     with open(file_path, 'wb') as out_file:
         for chunk in response.iter_content(chunk_size=1024):
             out_file.write(chunk)
+    extracted_file_names = []
     with zipfile.ZipFile(file_path, 'r') as zip_ref:
         zip_ref.extractall(path)
-    return file_name.split('.zip')[0]
+        extracted_file_names = zip_ref.namelist()
+    if extracted_file_names:
+        return os.path.splitext(extracted_file_names[0])[0]
+    return None
+
 
 
 def create_mapping_and_output_json(ror_data_file, json_output_file):
