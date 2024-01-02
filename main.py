@@ -11,9 +11,9 @@ views = {
     "DataCite - Aggregrate overlap": DataCite_view
 }
 
-funder_registry_version = '1.54'
-ror_registry_version = '1.36'
-works_count_date = '2023/11/11'
+funder_registry_version = '1.55'
+ror_registry_version = '1.39'
+works_count_date = '2023/01/01'
 
 def main():
     sidebar_title = st.sidebar.title("Views")
