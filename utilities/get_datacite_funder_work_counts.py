@@ -25,7 +25,8 @@ def transform_funder_id(funder_id):
     return re.sub('http://dx.doi.org/10.13039/','*', funder_id)
 
 def form_query_url(funder_id):
-    return f"https://api.datacite.org/dois?query=fundingReferences.funderIdentifier:*{funder_id}"
+    print(f"https://api.datacite.org/dois?query=fundingReferences.funderIdentifier:{funder_id}")
+    return f"https://api.datacite.org/dois?query=fundingReferences.funderIdentifier:{funder_id}"
 
 def query_datacite_api(url):
     response = requests.get(url)
