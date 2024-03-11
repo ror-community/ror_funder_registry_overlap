@@ -43,8 +43,8 @@ def mapped_to_csv(ror_funder_mapping, overlap, filename):
 
 
 def create_aggregate_csv():
-    equivalents = load_json('ror_funder_registry_mapping.json')
-    funders = count_funders(f'crossref_funders.json')
+    equivalents = load_json('data/ror_funder_registry_mapping.json')
+    funders = count_funders(f'data/crossref_funders.json')
     overlap = find_overlap(funders, equivalents)
     unmapped_filename = f'aggregate_unmapped.csv'
     unmapped_to_csv(funders, overlap, unmapped_filename)
