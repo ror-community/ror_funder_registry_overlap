@@ -6,10 +6,6 @@ import zipfile
 import os
 
 
-import os
-import requests
-import zipfile
-
 def download_and_unzip(record_id, path='.'):
     # Downloading the record from Zenodo
     response = requests.get(f'https://zenodo.org/api/records/{record_id}')

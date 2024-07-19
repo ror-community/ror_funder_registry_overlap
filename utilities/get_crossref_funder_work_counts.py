@@ -7,13 +7,23 @@ import traceback
 import requests
 
 
-def catch_requests_exceptions(func):
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except requests.exceptions.RequestException:
-            return 'Error'
-    return wrapper
+def catch_request_exceptions(max_retries=3, delay=30):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            retries = 0
+            while retries < max_retries:
+                try:
+                    return func(*args, **kwargs)
+                except requests.exceptions.RequestException as e:
+                    retries += 1
+                    if retries == max_retries:
+                        print(f"All {max_retries} attempts failed.")
+                        return 'Error'
+                    print(f"Request failed. Retrying in {delay} seconds... (Attempt {retries}/{max_retries})")
+                    time.sleep(delay)
+        return wrapper
+    return decorator
 
 
 def read_input_file(input_file):
@@ -29,7 +39,7 @@ def transform_funder_id(funder_id):
     return re.sub('http://dx.doi.org/10.13039/', '', funder_id)
 
 
-@catch_requests_exceptions
+@catch_request_exceptions
 def query_crossref_api(funder_id, headers):
     base_url = "https://api.crossref.org/works"
     params = {"filter": f"funder:{funder_id}"}
