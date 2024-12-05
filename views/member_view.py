@@ -30,7 +30,7 @@ def count_funders(member_id, rows=1000):
         if funders:
             for funder_id, count_works in funders.items():
                 funder_id = funder_id.replace(
-                    'http://dx.doi.org/10.13039/', '')
+                    'https://doi.org/10.13039/', '')
                 funder_counts[funder_id] = count_works
             return funder_counts
     return None
