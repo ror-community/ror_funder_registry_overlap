@@ -79,7 +79,7 @@ def plot_overlap(overlap_data, data_source):
 	axs[0].pie(
 		[overlap_data['overlapping_funders_percentage'], overlap_data['non_overlapping_funders_percentage']],
 		labels=['Overlapping', 'Non-overlapping'],
-		autopct='%1.1f%%',
+		autopct='%1.3f%%',
 		colors=funder_colors
 	)
 	axs[0].set_title(
@@ -90,7 +90,7 @@ def plot_overlap(overlap_data, data_source):
 	axs[1].pie(
 		[overlap_data['overlapping_assertions_percentage'], overlap_data['non_overlapping_assertions_percentage']],
 		labels=['Overlapping', 'Non-overlapping'],
-		autopct='%1.1f%%',
+		autopct='%1.3f%%',
 		colors=assertion_colors
 	)
 	axs[1].set_title(

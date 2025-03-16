@@ -5,6 +5,8 @@ import time
 import argparse
 import traceback
 import requests
+from functools import wraps
+import os
 
 
 def catch_request_exceptions(max_retries=3, delay=30):
@@ -22,6 +24,7 @@ def catch_request_exceptions(max_retries=3, delay=30):
                         return 'Error'
                     print(f"Request failed. Retrying in {delay} seconds... (Attempt {retries}/{max_retries})")
                     time.sleep(delay)
+            return 'Error'
         return wrapper
     return decorator
 
@@ -39,7 +42,7 @@ def transform_funder_id(funder_id):
     return re.sub('http://dx.doi.org/10.13039/', '', funder_id)
 
 
-@catch_request_exceptions
+@catch_request_exceptions()
 def query_crossref_api(funder_id, headers):
     base_url = "https://api.crossref.org/works"
     params = {"filter": f"funder:{funder_id}"}
@@ -55,9 +58,13 @@ def extract_work_count(response):
     return response['message']['total-results']
 
 
-def write_output_csv(output_file, data):
+def write_output_csv(output_file, data, write_header=False):
+    file_exists = os.path.isfile(output_file)
+
     with open(output_file, 'a') as file:
         writer = csv.writer(file)
+        if write_header and not file_exists:
+            writer.writerow(['Funder ID', 'Work Count'])
         writer.writerow(data)
 
 
@@ -65,7 +72,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(
         description='Retrieve all work counts for funders in Crossref')
     parser.add_argument(
-        '-i', '--input', help='Input CSV file', required=True)
+        '-i', '--input', help='Input JSON file', required=True)
     parser.add_argument(
         '-o', '--output', help='Output CSV file', default='crossref_funder_work_counts.csv')
     parser.add_argument('-t', '--token', type=str, default='',
@@ -78,30 +85,32 @@ def parse_arguments():
 def main():
     args = parse_arguments()
     funder_ids = read_input_file(args.input)
-    data = []
+    file_exists = os.path.isfile(args.output)
+    if not file_exists:
+        write_output_csv(
+            args.output, ['Funder ID', 'Work Count'], write_header=True)
+
     for funder_id in funder_ids:
         transformed_id = transform_funder_id(funder_id)
         headers = {}
         print(f'Retrieving works for {funder_id}...')
+
         if args.token:
             headers['Crossref-Plus-API-Token'] = args.token
         if args.user_agent:
             headers['User-Agent'] = args.user_agent
-        for i in range(2):  # Retry twice at most
-            try:
-                response = query_crossref_api(transformed_id, headers)
+
+        try:
+            response = query_crossref_api(transformed_id, headers)
+            if response != 'Error':
                 work_count = extract_work_count(response)
                 write_output_csv(args.output, [funder_id, work_count])
-                break
-            except Exception as e:
-                print(f"An error occurred: {str(e)}")
-                print("Retrying after 30 seconds...")
-                if i == 0:
-                    time.sleep(30)
-                else:
-                    print("Retry failed. Check the error below and fix it:")
-                    traceback.print_exc()
-                    break
+                print(f"Successfully retrieved {work_count} works for {funder_id}")
+            else:
+                print(f"Failed to retrieve works for {funder_id}")
+        except Exception as e:
+            print(f"An error occurred while processing {funder_id}: {str(e)}")
+            traceback.print_exc()
 
 
 if __name__ == "__main__":

@@ -16,6 +16,7 @@ def read_csv(file_path):
     data = []
     with open(file_path, 'r') as file:
         reader = csv.reader(file)
+        next(reader)
         for row in reader:
             data.append(tuple(row))
     return data
@@ -35,7 +36,7 @@ def deduplicate_data(data):
 
 
 def write_csv(file_path, data):
-    with open(file_path, 'w', newline='') as file:
+    with open(file_path, 'w') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
