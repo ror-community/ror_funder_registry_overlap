@@ -12,7 +12,7 @@ views = {
 }
 
 funder_registry_version = '1.60'
-ror_registry_version = '1.60'
+ror_registry_version = '1.70'
 works_count_date = '2025/03/16'
 
 def main():

@@ -26,8 +26,25 @@ def search_ror(funder_id):
         records = data.get('items', {})
         if records:
             for record in records:
-                matched_records.append(
-                    {'id': record['id'], 'name': record['name']})
+                display_name = None
+                for name in record.get('names', []):
+                    if 'ror_display' in name.get('types', []):
+                        display_name = name.get('value')
+                        break
+                
+                if not display_name:
+                    for name in record.get('names', []):
+                        if 'label' in name.get('types', []):
+                            display_name = name.get('value')
+                            break
+                
+                if not display_name and record.get('names'):
+                    display_name = record['names'][0].get('value', 'Unknown')
+                
+                matched_records.append({
+                    'id': record.get('id', ''),
+                    'name': display_name or 'Unknown'
+                })
             return matched_records
     return None
 
